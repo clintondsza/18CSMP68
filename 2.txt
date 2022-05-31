@@ -1,0 +1,80 @@
+<activity android:name=".Main Activity" android:export="true">
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+    Button btnAdd,btnSub,btnMul,btnDiv;
+    EditText op1Text,op2Text;
+    TextView resultText;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        op1Text = findViewById(R.id.op1);
+        op2Text = findViewById(R.id.op2);
+
+        btnAdd = findViewById(R.id.add);
+        btnSub = findViewById(R.id.sub);
+        btnMul = findViewById(R.id.mul);
+        btnDiv = findViewById(R.id.div);
+
+        resultText = findViewById(R.id.result);
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int a,b;
+                a = Integer.parseInt(op1Text.getText().toString());
+                b = Integer.parseInt(op2Text.getText().toString());
+                int res = a+b;
+                resultText.setText(""+res);
+            }
+        });
+
+        btnSub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int a,b;
+                a = Integer.parseInt(op1Text.getText().toString());
+                b = Integer.parseInt(op2Text.getText().toString());
+                int res = a-b;
+                resultText.setText(""+res);
+            }
+        });
+
+        btnMul.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int a,b;
+                a = Integer.parseInt(op1Text.getText().toString());
+                b = Integer.parseInt(op2Text.getText().toString());
+                int res = a*b;
+                resultText.setText(""+res);
+            }
+        });
+
+        btnDiv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int a,b;
+                a = Integer.parseInt(op1Text.getText().toString());
+                b = Integer.parseInt(op2Text.getText().toString());
+                if(b==0)
+                {
+                    Toast.makeText(getApplicationContext(),"We can not divide",Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    int res = a/b;
+                    resultText.setText(""+res);
+                }
+
+            }
+        });
+    }
+}
