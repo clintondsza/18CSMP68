@@ -1,0 +1,173 @@
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+public class MainActivity extends AppCompatActivity {
+    Button btnXML, btnJSON;
+    TextView display;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        btnXML = findViewById(R.id.xml);
+        btnJSON = findViewById(R.id.json);
+        display = findViewById(R.id.displaytext);
+        btnXML.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Step1 - reading the content of the file
+                try {
+                    InputStream is = getAssets().open("Lab6.xml");
+                    // step 2 string build factory
+                    DocumentBuilderFactory dBF = DocumentBuilderFactory.newInstance();
+                    // step 3 document builder
+                    DocumentBuilder dB = dBF.newDocumentBuilder();
+                    //step 4
+                    Document d = dB.parse(is);
+                    // step 5 string builder
+                    StringBuilder sB = new StringBuilder();
+
+                    sB.append("XML DATA");
+                    sB.append("\n----------------------------");
+
+                    NodeList citylist = d.getElementsByTagName("city");
+
+                    for(int i = 0; i<citylist.getLength(); i++)
+                    {
+                        //traversing the node list
+                        Node city = citylist.item(i); // getting first node and next
+                        if(city.getNodeType() == city.ELEMENT_NODE)
+                        {
+                            //Convert the node into element
+                            Element element = (Element)city;
+                            //get the data from the tag name of the city
+                            sB.append("\n Name:").append(getValue("City_name", element));
+                            sB.append("\n Latitude:").append(getValue("Latitude", element));
+                            sB.append("\n Longitude:").append(getValue("Longitude", element));
+                            sB.append("\n Temperature:").append(getValue("Temperature", element));
+                            sB.append("\n Humidity:").append(getValue("Humidity", element));
+                            sB.append("\n");
+
+                        }
+                    }
+
+                    display.setText(sB);
+
+                } catch (IOException | ParserConfigurationException | SAXException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        btnJSON.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View view) {
+                String json;
+                StringBuilder sB = new StringBuilder();
+                try {
+                    InputStream is = getAssets().open("Lab6.json");
+                    int size = is.available();
+                    byte[] buffer = new byte[size];
+                    is.read(buffer);
+                    json = new String(buffer, StandardCharsets.UTF_8);
+                    JSONArray jsonArray = new JSONArray(json);
+
+                    sB.append("JSON DATA");
+                    sB.append("\n-------------------------------------------");
+
+                    for(int i=0;i<jsonArray.length();i++)
+                    {
+                        JSONObject jo = jsonArray.getJSONObject(i);
+                        sB.append("\n name: ").append(jo.getString("name"));
+                        sB.append("\n lat: ").append(jo.getString("lat"));
+                        sB.append("\n long: ").append(jo.getString("long"));
+                        sB.append("\n temp: ").append(jo.getString("temp"));
+                        sB.append("\n hum: ").append(jo.getString("hum"));
+                        sB.append("\n");
+
+                    }
+
+                    display.setText(sB);
+
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+    private String getValue(String tag, Element element)
+    {
+        return element.getElementsByTagName(tag).item(0).getChildNodes().item(0).getNodeValue();
+    }
+}
+
+// *************************
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/xml"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="XML"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.213"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.771" />
+
+    <Button
+        android:id="@+id/json"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="json"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.736"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.771" />
+
+    <TextView
+        android:id="@+id/displaytext"
+        android:layout_width="288dp"
+        android:layout_height="293dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.56"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
